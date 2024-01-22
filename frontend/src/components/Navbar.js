@@ -26,7 +26,7 @@ export const Navbar = () => {
     }
 
     return (
-        <Disclosure as="nav" className="bg-gray-800">
+        <Disclosure as="nav" className="absolute top-0 right-0 left-0 bg-gray-800">
             {({open}) => (
                 <>
                     <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -42,11 +42,13 @@ export const Navbar = () => {
                             </div>
                             <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                                 <div className="flex flex-shrink-0 items-center">
-                                    <img
-                                        className="h-8 w-auto"
-                                        src={logo}
-                                        alt="Your Company"
-                                    />
+                                    <Link to={'/'}>
+                                        <img
+                                            className="h-8 w-auto"
+                                            src={logo}
+                                            alt="Your Company"
+                                        />
+                                    </Link>
                                 </div>
                                 <div className="hidden sm:ml-6 sm:block">
                                     <div className="flex space-x-4">
@@ -81,7 +83,7 @@ export const Navbar = () => {
                                     <Menu as="div" className="relative ml-3">
                                         <div>
                                             <Menu.Button
-                                                className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                                                className="outline-none flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                                                 <span className="absolute -inset-1.5"/>
                                                 <span className="sr-only">Open user menu</span>
                                                 {user.photo ? (
@@ -111,7 +113,8 @@ export const Navbar = () => {
                                             <Menu.Items
                                                 className="absolute right-0 z-10 mt-6 w-48 origin-top-right rounded-md bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                                 <Menu.Item>
-                                                    <Link to={`/profile/${user.username}`} className="flex justify-start p-2">
+                                                    <Link to={`/profile/${user.username}`}
+                                                          className="flex justify-start p-2">
                                                         {user.photo ? (
                                                             <img
                                                                 className="h-8 w-8 rounded-full"
@@ -153,10 +156,18 @@ export const Navbar = () => {
                                                         <a
                                                             onClick={handleLogout}
                                                             href="#"
-                                                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-base text-white bg-gray-800 hover:bg-gray-700')}
+                                                            className={classNames(active ? 'bg-gray-100' : '', 'flex justify-between items-center px-4 py-2 text-base text-white bg-gray-800 hover:bg-gray-700')}
                                                         >
                                                             Sign out
-                                                            <i className="fa-solid fa-arrow-right-from-bracket text-white"></i>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                                                 fill="currentColor" className="w-5 h-5">
+                                                                <path fill-rule="evenodd"
+                                                                      d="M3 4.25A2.25 2.25 0 0 1 5.25 2h5.5A2.25 2.25 0 0 1 13 4.25v2a.75.75 0 0 1-1.5 0v-2a.75.75 0 0 0-.75-.75h-5.5a.75.75 0 0 0-.75.75v11.5c0 .414.336.75.75.75h5.5a.75.75 0 0 0 .75-.75v-2a.75.75 0 0 1 1.5 0v2A2.25 2.25 0 0 1 10.75 18h-5.5A2.25 2.25 0 0 1 3 15.75V4.25Z"
+                                                                      clip-rule="evenodd"/>
+                                                                <path fill-rule="evenodd"
+                                                                      d="M6 10a.75.75 0 0 1 .75-.75h9.546l-1.048-.943a.75.75 0 1 1 1.004-1.114l2.5 2.25a.75.75 0 0 1 0 1.114l-2.5 2.25a.75.75 0 1 1-1.004-1.114l1.048-.943H6.75A.75.75 0 0 1 6 10Z"
+                                                                      clip-rule="evenodd"/>
+                                                            </svg>
                                                         </a>
                                                     )}
                                                 </Menu.Item>

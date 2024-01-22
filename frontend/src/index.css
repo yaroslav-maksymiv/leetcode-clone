@@ -3,3 +3,63 @@
 @import 'tailwindcss/components';
 
 @import 'tailwindcss/utilities';
+
+/* Styles for the overlay */
+.user-profile-photo {
+    position: relative;
+    cursor: pointer;
+}
+
+.user-profile-photo:hover::after, .user-profile-photo:hover .user-profile-photo__icon {
+    opacity: 1;
+}
+
+.user-profile-photo__icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 2;
+}
+
+.user-profile-photo__icon svg {
+    color: #fff;
+}
+
+.user-profile-photo::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(128, 128, 128, 0.7);
+    border-radius: 8px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+}
+
+.popup-content {
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;  /* Adjust padding as needed */
+    border-radius: 10px;
+    width: 30%;
+}
+
+.popup-overlay {
+    background-color: rgba(0, 0, 0, 0.5);  /* Adjust the overlay background color and opacity */
+}
+
+/* Style for the arrow, assuming .popup-arrow is the class for the arrow element */
+.popup-arrow {
+
+}
+
