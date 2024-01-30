@@ -1,15 +1,18 @@
 import logo from '../assets/logo.png'
 
 import {useState, useEffect} from "react";
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import {Link} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {login} from "../actions/auth";
 
-
 export const Login = () => {
+    const location = useLocation()
     const navigate = useNavigate()
     const dispatch = useDispatch()
+
+    const redirectUrl = new URLSearchParams(location.search).get('redirect_url')
+
 
     const [formData, setFormData] = useState({
         username: '',
@@ -19,7 +22,12 @@ export const Login = () => {
     const {isAuthenticated} = useSelector(state => state.auth)
     useEffect(() => {
         if (isAuthenticated) {
-            navigate('/')
+            if (redirectUrl) {
+                navigate(`/${redirectUrl}`)
+            } else {
+                navigate('/')
+            }
+
         }
     }, [isAuthenticated])
 

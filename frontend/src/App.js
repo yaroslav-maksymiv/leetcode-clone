@@ -10,6 +10,8 @@ import {Home} from "./containers/Home";
 import {PasswordReset} from "./containers/PasswordReset";
 import {PasswordResetConfirmation} from "./containers/PasswordResetConfirmation";
 import {ProfileEdit} from "./containers/ProfileEdit";
+import {Problem} from "./containers/Problem";
+import {Problems} from "./containers/Problems";
 
 const App = () => {
     return (
@@ -17,8 +19,9 @@ const App = () => {
             <BrowserRouter>
                 <Layout>
                     <Routes>
-                        <Route path='/' element={<Home />} />
+                        <Route path='/' element={<Problems />} />
                         <Route path='/edit-profile' element={<ProfileEdit />} />
+                        <Route path='/problem' element={<Problem />} />
                         <Route path='/login' element={<Login />} />
                         <Route path='/register' element={<Register />} />
                         <Route path='/password-reset' element={<PasswordReset />}/>

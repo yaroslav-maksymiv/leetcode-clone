@@ -26,13 +26,13 @@ const PhotoEditPopup = ({editedUser, setEditedUser, handleSubmit, cancelEditing}
             <div className="user-profile-photo mr-6" onClick={() => setOpen(o => !o)}>
                 {editedUser.photo ? (
                     <img
-                        className="h-40 w-40 border border-2 border-gray-500 rounded-lg"
+                        className="h-40 w-40 border border-2 border-gray-500 rounded-full"
                         src={editedUser.photo}
                         alt=""
                     />
                 ) : (
                     <img
-                        className="h-40 w-40 border border-2 border-gray-500 rounded-lg"
+                        className="h-40 w-40 border border-2 border-gray-500 rounded-full"
                         src={user_photo}
                         alt=""
                     />
@@ -47,40 +47,43 @@ const PhotoEditPopup = ({editedUser, setEditedUser, handleSubmit, cancelEditing}
                     </svg>
                 </div>
             </div>
-            <Popup open={open} closeOnDocumentClick onClose={closeModal}>
-                <div>
-                    <div className="popup-header flex justify-between items-center mb-5">
-                        <h2 className="text-xl font-semibold">Edit Profile Photo</h2>
-                        <button className="close-icon" onClick={closeModal}>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                 stroke="currentColor"
-                                 className="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
+            <div>
+                <Popup open={open} closeOnDocumentClick onClose={closeModal} className="edit-photo-popup">
+                    <div>
+                        <div className="popup-header flex justify-between items-center mb-5">
+                            <h2 className="text-xl font-semibold">Edit Profile Photo</h2>
+                            <button className="close-icon" onClick={closeModal}>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                     stroke="currentColor"
+                                     className="w-6 h-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                          d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div className="avatar-edit mb-6 flex justify-center">
+                            {/* Your AvatarEdit component */}
+                            <AvatarEdit
+                                width={200}
+                                height={200}
+                                imageWidth={370}
+                                minCropRadius={60}
+                                onCrop={(croppedImage) => setCroppedImage(croppedImage)}
+                            />
+                        </div>
+                        <div className="w-full button-container flex justify-end">
+                            <button onClick={handleSavePhoto}
+                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-3">
+                                Save
+                            </button>
+                            <button onClick={closeModal}
+                                    className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mr-3">
+                                Cancel
+                            </button>
+                        </div>
                     </div>
-                    <div className="avatar-edit mb-6 flex justify-center">
-                        {/* Your AvatarEdit component */}
-                        <AvatarEdit
-                            width={200}
-                            height={200}
-                            imageWidth={370}
-                            minCropRadius={60}
-                            onCrop={(croppedImage) => setCroppedImage(croppedImage)}
-                        />
-                    </div>
-                    <div className="w-full button-container flex justify-end">
-                        <button onClick={handleSavePhoto}
-                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-3">
-                            Save
-                        </button>
-                        <button onClick={closeModal}
-                                className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mr-3">
-                            Cancel
-                        </button>
-                    </div>
-                </div>
-            </Popup>
+                </Popup>
+            </div>
         </>
 
     )

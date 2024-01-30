@@ -1,11 +1,10 @@
-import {Fragment} from 'react'
-import {Disclosure, Menu, Transition} from '@headlessui/react'
-import {Link} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-
-import logo from '../assets/logo.png'
-import user_photo from '../assets/user_photo.png'
-import {logout} from "../actions/auth";
+import {logout} from "../../actions/auth";
+import {Disclosure, Menu, Transition} from "@headlessui/react";
+import {Link, useNavigate} from "react-router-dom";
+import logo from "../../assets/logo.png";
+import user_photo from "../../assets/user_photo.png";
+import {Fragment} from "react";
 
 const navigation = [
     {name: 'Problems', href: '/', current: true},
@@ -15,8 +14,9 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
-export const Navbar = () => {
+const ProblemNavbar = ({}) => {
     const dispatch = useDispatch()
+    const navigate = useNavigate()
 
     const {isAuthenticated, user} = useSelector(state => state.auth)
 
@@ -25,22 +25,19 @@ export const Navbar = () => {
         dispatch(logout())
     }
 
+    const checkUserLoggedIn = () => {
+        if (!isAuthenticated) {
+            navigate(`/login/?redirect_url=problem`)
+        }
+    }
+
     return (
-        <Disclosure as="nav" className="absolute top-0 right-0 left-0 bg-zinc-900 z-19">
+        <Disclosure as="nav" className="fixed top-0 right-0 left-0 bg-zinc-900 z-20">
             {({open}) => (
                 <>
-                    <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-                        <div className="relative flex h-16 items-center justify-between">
-                            <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-                                {/* Mobile menu button*/}
-                                <Disclosure.Button
-                                    className="relative inline-flex items-center justify-center rounded-md p-2 text-zinc-400 hover:bg-zinc-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
-                                    <span className="absolute -inset-0.5"/>
-                                    <span className="sr-only">Open main menu</span>
-
-                                </Disclosure.Button>
-                            </div>
-                            <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+                    <div className="px-2">
+                        <div className="relative h-16 w-full grid grid-cols-3">
+                            <div className="flex items-center gap-3">
                                 <div className="flex flex-shrink-0 items-center">
                                     <Link to={'/'}>
                                         <img
@@ -50,26 +47,46 @@ export const Navbar = () => {
                                         />
                                     </Link>
                                 </div>
-                                <div className="hidden sm:ml-6 sm:block">
-                                    <div className="flex space-x-4">
-                                        {navigation.map((item) => (
-                                            <Link
-                                                key={item.name}
-                                                to={item.href}
-                                                className={classNames(
-                                                    item.current ? 'bg-zinc-900 text-white' : 'text-zinc-300 hover:bg-zinc-700 hover:text-white',
-                                                    'rounded-md px-3 py-2 text-sm font-medium'
-                                                )}
-                                                aria-current={item.current ? 'page' : undefined}
-                                            >
-                                                {item.name}
-                                            </Link>
-                                        ))}
-                                    </div>
+                                <div className="flex space-x-4">
+                                    {navigation.map((item) => (
+                                        <Link
+                                            key={item.name}
+                                            to={item.href}
+                                            className={classNames(
+                                                item.current ? 'bg-zinc-900 text-white' : 'text-zinc-300 hover:bg-zinc-700 hover:text-white',
+                                                'rounded-md px-3 py-2 text-sm font-medium'
+                                            )}
+                                            aria-current={item.current ? 'page' : undefined}
+                                        >
+                                            {item.name}
+                                        </Link>
+                                    ))}
                                 </div>
                             </div>
+                            <div className="flex items-center justify-center gap-0.5 h-full">
+                                <button
+                                    onClick={checkUserLoggedIn}
+                                    className="text-bold bg-neutral-700 hover:bg-neutral-600 text-white py-2 px-4 rounded-l-md flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                              d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"/>
+                                    </svg>
+                                    Run
+                                </button>
+                                <button
+                                    onClick={checkUserLoggedIn}
+                                    className="text-bold bg-neutral-700 hover:bg-neutral-600 text-green-600 py-2 px-4 rounded-r-md flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                         stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                              d="M12 16.5V9.75m0 0 3 3m-3-3-3 3M6.75 19.5a4.5 4.5 0 0 1-1.41-8.775 5.25 5.25 0 0 1 10.233-2.33 3 3 0 0 1 3.758 3.848A3.752 3.752 0 0 1 18 19.5H6.75Z"/>
+                                    </svg>
+                                    Submit
+                                </button>
+                            </div>
                             <div
-                                className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                                className="absolute inset-y-0 right-0 flex items-center justify-end pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
 
                                 {/* Profile dropdown */}
                                 {isAuthenticated && user ? (
@@ -179,26 +196,10 @@ export const Navbar = () => {
                         </div>
                     </div>
 
-                    <Disclosure.Panel className="sm:hidden">
-                        <div className="space-y-1 px-2 pb-3 pt-2">
-                            {navigation.map((item) => (
-                                <Disclosure.Button
-                                    key={item.name}
-                                    as="a"
-                                    href={item.href}
-                                    className={classNames(
-                                        item.current ? 'bg-zinc-900 text-white' : 'text-zinc-300 hover:bg-zinc-700 hover:text-white',
-                                        'block rounded-md px-3 py-2 text-base font-medium'
-                                    )}
-                                    aria-current={item.current ? 'page' : undefined}
-                                >
-                                    {item.name}
-                                </Disclosure.Button>
-                            ))}
-                        </div>
-                    </Disclosure.Panel>
                 </>
             )}
         </Disclosure>
     )
 }
+
+export default ProblemNavbar

@@ -46,20 +46,46 @@
     z-index: 1;
 }
 
-.popup-content {
+.edit-photo-popup-content {
     background-color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 20px;  /* Adjust padding as needed */
+    padding: 20px; /* Adjust padding as needed */
     border-radius: 10px;
     width: 30%;
 }
 
-.popup-overlay {
-    background-color: rgba(0, 0, 0, 0.5);  /* Adjust the overlay background color and opacity */
+.edit-photo-popup-overlay {
+    background-color: rgba(0, 0, 0, 0.5); /* Adjust the overlay background color and opacity */
 }
 
-/* Style for the arrow, assuming .popup-arrow is the class for the arrow element */
-.popup-arrow {
+.date-popup-content {
 
 }
+
+.date-popup-arrow {
+    display: none;
+}
+
+/* Scroll bar */
+
+/* For Webkit browsers (Chrome, Safari) */
+::-webkit-scrollbar {
+    width: 15px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: darkgray;
+    border-radius: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #1e1e1e; /* Change this to the background color of your container */
+}
+
+/* For Firefox */
+* {
+    scrollbar-color: darkgray #1e1e1e; /* thumb and track color */
+    scrollbar-width: thin;
+}
+
 
