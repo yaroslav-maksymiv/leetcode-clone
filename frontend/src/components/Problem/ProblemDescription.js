@@ -3,7 +3,7 @@ import {useEffect, useRef, useState} from "react";
 import Submissions from "./Submissions";
 import Solution from "./Solution";
 
-const ProblemDescription = () => {
+const ProblemDescription = ({problemData}) => {
 
     const discussionRef = useRef(null)
 
@@ -11,7 +11,10 @@ const ProblemDescription = () => {
     const [activeTab, setActiveTab] = useState('description')
 
     const handleScrollToDiscussion = () => {
-        discussionRef.current?.scrollIntoView({behavior: 'smooth'})
+        setActiveTab('description')
+        setTimeout(() => {
+            discussionRef.current?.scrollIntoView({behavior: 'smooth'})
+        }, 200)
     }
 
     return (
@@ -55,13 +58,13 @@ const ProblemDescription = () => {
             </div>
 
             <div
-                className="layout-block bg-zinc-800 w-full h-full rounded-md border border-gray-500 flex flex-col overflow-y-auto">
+                className="layout-block bg-zinc-800 w-full h-full rounded-md flex flex-col overflow-y-auto">
                 {/* Rest of your code */}
 
                 <div style={{'height': '554px'}}
                      className={`${activeTab === 'description' ? '' : 'hidden'} description min-w-96 layout-block__content flex-grow h-full overflow-auto px-4 py-5`}>
                     <div className="flex justify-between items-center w-full mb-6">
-                        <h1 className="text-white text-3xl">Problem title</h1>
+                        <h1 className="text-white text-3xl">{problemData.title}</h1>
                         <div className="flex items-center gap-1 text-gray-500">
                             <p className="">Solved</p>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -77,63 +80,35 @@ const ProblemDescription = () => {
                         <div className="bg-zinc-600 text-sm px-2 py-1 text-red-500 rounded-lg">Hard</div>
                     </div>
                     <div className="text-white mb-10">
-                        <p>Hello <em>world</em>.&nbsp;</p>
-
-                        <p>My <strong><em>name</em></strong> is <strong>yaroslav</strong></p>
-
+                        <div dangerouslySetInnerHTML={{__html: problemData.statement}}></div>
                     </div>
                     <div className="mb-10 flex flex-col gap-6">
-                        <div>
-                            <h6 className="text-white mb-2">Example:</h6>
-                            <div className="pl-4 border-l-2 border-gray-500 flex flex-col gap-2">
-                                <div className="flex gap-2">
-                                    <p className="text-white text-bold">Input: </p>
-                                    <p className="text-gray-400">sdfsdfsdfsdf</p>
-                                </div>
-                                <div className="flex gap-2">
-                                    <p className="text-white text-bold">Output: </p>
-                                    <p className="text-gray-400">sdfsdfsdfsdf</p>
-                                </div>
-                                <div className="flex gap-2">
-                                    <p className="text-white text-bold">Explanation: </p>
-                                    <p className="text-gray-400">sdfsdfsdfsdf</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <h6 className="text-white mb-2">Example:</h6>
-                            <div className="pl-4 border-l-2 border-gray-500 flex flex-col gap-2">
-                                <div className="flex gap-2">
-                                    <p className="text-white text-bold">Input: </p>
-                                    <p className="text-gray-400">sdfsdfsdfsdf</p>
-                                </div>
-                                <div className="flex gap-2">
-                                    <p className="text-white text-bold">Output: </p>
-                                    <p className="text-gray-400">sdfsdfsdfsdf</p>
-                                </div>
-                                <div className="flex gap-2">
-                                    <p className="text-white text-bold">Explanation: </p>
-                                    <p className="text-gray-400">sdfsdfsdfsdf</p>
+                        {problemData.examples.map(example => (
+                            <div key={example.id}>
+                                <h6 className="text-white mb-2">Example:</h6>
+                                <div className="pl-4 border-l-2 border-gray-500 flex flex-col gap-2">
+                                    <div className="flex gap-2">
+                                        <p className="text-white text-bold">Input: </p>
+                                        <p className="text-gray-400">{example.inputText}</p>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <p className="text-white text-bold">Output: </p>
+                                        <p className="text-gray-400">{example.outputText}</p>
+                                    </div>
+                                    {example.explanation && (
+                                        <div className="flex gap-2">
+                                            <p className="text-white text-bold">Explanation: </p>
+                                            <p className="text-gray-400">{example.explanation}</p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
-                        </div>
-                        <div>
-                            <h6 className="text-white mb-2">Example:</h6>
-                            <div className="pl-4 border-l-2 border-gray-500 flex flex-col gap-2">
-                                <div className="flex gap-2">
-                                    <p className="text-white text-bold">Input: </p>
-                                    <p className="text-gray-400">sdfsdfsdfsdf</p>
-                                </div>
-                                <div className="flex gap-2">
-                                    <p className="text-white text-bold">Output: </p>
-                                    <p className="text-gray-400">sdfsdfsdfsdf</p>
-                                </div>
-                                <div className="flex gap-2">
-                                    <p className="text-white text-bold">Explanation: </p>
-                                    <p className="text-gray-400">sdfsdfsdfsdf</p>
-                                </div>
-                            </div>
-                        </div>
+                        ))}
+                    </div>
+                    <div className="mb-10 text-white">
+                        <h6 className="text-white mb-2">Constraints:</h6>
+                        <div className="flex flex-col gap-1.5"
+                             dangerouslySetInnerHTML={{__html: problemData.constraints}}></div>
                     </div>
                     <div className="w-full bg-gray-500 border-b border-gray-500 mb-8"></div>
                     <div className="flex items-center flex-wrap gap-3 mb-8">

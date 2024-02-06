@@ -66,6 +66,15 @@
     display: none;
 }
 
+code {
+    display: inline;
+    border: 1px solid rgb(107 114 128);
+    background: #18181b;
+    color: #fff;
+    border-radius: 5px;
+    padding: 3px 5px;
+}
+
 /* Scroll bar */
 
 /* For Webkit browsers (Chrome, Safari) */

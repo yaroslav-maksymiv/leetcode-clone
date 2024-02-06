@@ -21,7 +21,7 @@ const App = () => {
                     <Routes>
                         <Route path='/' element={<Problems />} />
                         <Route path='/edit-profile' element={<ProfileEdit />} />
-                        <Route path='/problem' element={<Problem />} />
+                        <Route path='/problem/:id' element={<Problem />} />
                         <Route path='/login' element={<Login />} />
                         <Route path='/register' element={<Register />} />
                         <Route path='/password-reset' element={<PasswordReset />}/>

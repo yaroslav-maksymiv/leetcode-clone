@@ -14,21 +14,14 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
-const ProblemNavbar = ({}) => {
+const ProblemNavbar = ({handleCodeRun, handleCodeSubmit}) => {
     const dispatch = useDispatch()
-    const navigate = useNavigate()
 
     const {isAuthenticated, user} = useSelector(state => state.auth)
 
     const handleLogout = (e) => {
         e.preventDefault()
         dispatch(logout())
-    }
-
-    const checkUserLoggedIn = () => {
-        if (!isAuthenticated) {
-            navigate(`/login/?redirect_url=problem`)
-        }
     }
 
     return (
@@ -65,7 +58,7 @@ const ProblemNavbar = ({}) => {
                             </div>
                             <div className="flex items-center justify-center gap-0.5 h-full">
                                 <button
-                                    onClick={checkUserLoggedIn}
+                                    onClick={() => handleCodeRun()}
                                     className="text-bold bg-neutral-700 hover:bg-neutral-600 text-white py-2 px-4 rounded-l-md flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                          stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -75,7 +68,7 @@ const ProblemNavbar = ({}) => {
                                     Run
                                 </button>
                                 <button
-                                    onClick={checkUserLoggedIn}
+                                    onClick={() => handleCodeSubmit()}
                                     className="text-bold bg-neutral-700 hover:bg-neutral-600 text-green-600 py-2 px-4 rounded-r-md flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                          stroke-width="1.5" stroke="currentColor" class="w-5 h-5">

@@ -10,12 +10,11 @@ import Popup from 'reactjs-popup';
 import {useState} from "react";
 import {capitalizeFirstLetter} from "../../misc";
 
-const ProblemCode = () => {
+const ProblemCode = ({code, setCode, problemData}) => {
     const availableFontSizes = Array.from({length: (21 + 1) - 12}, (_, index) => 12 + index)
 
-    const [value, setValue] = useState("console.log('hello world!');")
-    const [language, setLanguage] = useState(python())
-    const [languageName, setLanguageName] = useState('Python')
+    const [language, setLanguage] = useState(javascript())
+    const [languageName, setLanguageName] = useState('Java Script')
     const [languageModalIsOpen, setLanguageModalIsOpen] = useState(false)
 
     const [editorFontSize, setEditorFontSize] = useState(16)
@@ -29,13 +28,17 @@ const ProblemCode = () => {
     }
 
     const onChange = (value) => {
-        setValue(value)
+        setCode(value)
     }
 
     const handleLanguageChange = (lang, langName) => {
         setLanguage(lang)
         setLanguageName(langName)
         setLanguageModalIsOpen(false)
+    }
+
+    const handleCodeReset = () => {
+        setCode(problemData.startCode)
     }
 
     return (
@@ -83,12 +86,12 @@ const ProblemCode = () => {
                             <div
                                 className="w-52 mt-3 bg-zinc-700 p-3 rounded-md text-white absolute z-10 grid grid-cols-2 gap-2">
                                 <button
-                                    onClick={() => handleLanguageChange(cpp(), 'C++')}
+
                                     className="w-full cursor-pointer text-sm hover:bg-neutral-600 text-white py-0.5 px-2 rounded-md flex items-center gap-1">
                                     C++
                                 </button>
                                 <button
-                                    onClick={() => handleLanguageChange(python(), 'Python')}
+
                                     className="w-full cursor-pointer text-sm hover:bg-neutral-600 text-white py-0.5 px-2 rounded-md flex items-center gap-1">
                                     Python
                                 </button>
@@ -98,12 +101,10 @@ const ProblemCode = () => {
                                     Java Script
                                 </button>
                                 <button
-                                    onClick={() => handleLanguageChange(java(), 'Java')}
                                     className="w-full cursor-pointer text-sm hover:bg-neutral-600 text-white py-0.5 px-2 rounded-md flex items-center gap-1">
                                     Java
                                 </button>
                                 <button
-                                    onClick={() => handleLanguageChange(php(), 'PHP')}
                                     className="w-full cursor-pointer text-sm hover:bg-neutral-600 text-white py-0.5 px-2 rounded-md flex items-center gap-1">
                                     PHP
                                 </button>
@@ -152,6 +153,7 @@ const ProblemCode = () => {
                             </div>
                         </Popup>
                         <button
+                            onClick={handleCodeReset}
                             className="cursor-pointer text-sm hover:bg-neutral-600 text-white py-0.5 px-2 rounded-md flex items-center gap-1">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                  stroke="currentColor" className="w-4 h-4">
@@ -163,7 +165,7 @@ const ProblemCode = () => {
                 </div>
                 <div style={{'fontSize': `${editorFontSize}px`}}>
                     <CodeMirror
-                        value={value}
+                        value={code}
                         height={'100%'}
                         onChange={onChange}
                         theme={vscodeDark}

@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export const monthDictionary = {
   1: 'January',
   2: 'February',
@@ -35,4 +37,29 @@ export const languageCodes = {
 
 export const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+const handleRequest = async () => {
+    const config = {
+        headers: {
+            'X-RapidAPI-Key': 'd01ff1e4e9msh7c776ea78f5da42p14d486jsnf48c931f157a',
+            'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com',
+            'content-type': 'application/json',
+        }
+    }
+
+    // const response = await axios.get('https://ce.judge0.com/languages/', config)
+    // console.log(response)
+
+    // const body = {
+    //     'language_id': 71,
+    //     'source_code': "print('hello world!')",
+    //     'expected_output': 'hello world!'
+    // }
+    //
+    // const response = await axios.post('https://judge0-ce.p.rapidapi.com/submissions', body, config)
+    // console.log(response)
+
+    const response = await axios.get(`https://judge0-ce.p.rapidapi.com/submissions/08a28ca5-bc4d-4941-9e32-af43463ea3a7`, config)
+    console.log(response)
 }

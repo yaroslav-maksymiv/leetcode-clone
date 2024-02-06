@@ -9,7 +9,7 @@ const Discussion = () => {
                         <textarea
                             id="comment"
                             name="comment"
-                            rows="5"
+                            rows="3"
                             className="w-full p-2 rounded-md resize-none bg-transparent border-none focus:ring-0"
                             placeholder="Write your comment here..."
                             required

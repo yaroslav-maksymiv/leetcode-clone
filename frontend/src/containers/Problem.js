@@ -4,31 +4,41 @@ import ProblemDescription from "../components/Problem/ProblemDescription";
 import ProblemCode from "../components/Problem/ProblemCode";
 import ProblemTests from "../components/Problem/ProblemTests";
 import ProblemNavbar from "../components/Problem/ProblemNavbar";
+import {useNavigate, useParams} from "react-router-dom";
+import {getProblemData} from "../utils/problems";
+import {useSelector} from "react-redux";
 
 export const Problem = () => {
-    const handleRequest = async () => {
-        const config = {
-            headers: {
-                'X-RapidAPI-Key': 'd01ff1e4e9msh7c776ea78f5da42p14d486jsnf48c931f157a',
-                'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com',
-                'content-type': 'application/json',
-            }
+    const navigate = useNavigate()
+    const {id: problemId} = useParams()
+    const problemData = getProblemData(problemId)
+
+    const [result, setResult] = useState(null)
+    const [code, setCode] = useState(problemData.startCode)
+    const [language, setLanguage] = useState('Java Script')
+
+    const {isAuthenticated} = useSelector(state => state.auth)
+
+    const checkUserLoggedIn = () => {
+        if (!isAuthenticated) {
+            navigate(`/login/?redirect_url=problem/${problemId}`)
         }
+        return true
+    }
 
-        // const response = await axios.get('https://ce.judge0.com/languages/', config)
-        // console.log(response)
+    const handleCodeRun = () => {
+        if (checkUserLoggedIn()) {
+            const userCode = new Function(`return ${code}`)()
+            const startTime = performance.now()
+            const result = problemData.handlerFunction(userCode)
+            const endTime = performance.now()
+            const resultTime = endTime - startTime
+            setResult([...result, resultTime])
+        }
+    }
 
-        // const body = {
-        //     'language_id': 71,
-        //     'source_code': "print('hello world!')",
-        //     'expected_output': 'hello world!'
-        // }
-        //
-        // const response = await axios.post('https://judge0-ce.p.rapidapi.com/submissions', body, config)
-        // console.log(response)
-
-        const response = await axios.get(`https://judge0-ce.p.rapidapi.com/submissions/08a28ca5-bc4d-4941-9e32-af43463ea3a7`, config)
-        console.log(response)
+    const handleCodeSubmit = () => {
+        handleCodeRun()
     }
 
     const isResized = useRef(false)
@@ -36,9 +46,7 @@ export const Problem = () => {
     const halfDividerWidth = 4
 
     const elementWidth = window.innerWidth
-    // const [minWidth, setMinWidth] = useState(0.25 * elementWidth - halfDividerWidth)
-    // const [maxWidth, setMaxWidth] = useState(0.75 * elementWidth - halfDividerWidth)
-     const [minWidth, setMinWidth] = useState(50)
+    const [minWidth, setMinWidth] = useState(50)
     const [maxWidth, setMaxWidth] = useState(elementWidth - halfDividerWidth - 50)
     const [leftPanelWidth, setLeftPanelWidth] = useState(0.5 * elementWidth - halfDividerWidth)
 
@@ -71,12 +79,12 @@ export const Problem = () => {
 
     return (
         <>
-            <ProblemNavbar/>
+            <ProblemNavbar handleCodeSubmit={handleCodeSubmit} handleCodeRun={handleCodeRun}/>
             <div
                 className="overflow-hidden pt-14 resizable-layout w-full h-screen grid grid-cols-[min-content_auto] bg-zinc-900">
                 <div className="flex">
                     <div className="left-panel flex p-2 pr-0 overflow-hidden" style={{width: `${leftPanelWidth}px`}}>
-                        <ProblemDescription/>
+                        <ProblemDescription problemData={problemData}/>
                     </div>
                     <div className="divider w-2 cursor-col-resize"
                          onMouseDown={() => isResized.current = true}></div>
@@ -85,13 +93,14 @@ export const Problem = () => {
                 <div className="right-panel grid grid-rows-[min-content_auto] overflow-hidden">
                     <div className="">
                         <div className="top-panel p-2 pl-0 pb-0" style={{height: `${topPanelHeight}px`}}>
-                            <ProblemCode/>
+                            <ProblemCode problemData={problemData} setCode={setCode} setLanguage={setLanguage}
+                                         code={code} language={language}/>
                         </div>
                         <div className="horizontal-divider cursor-row-resize h-2"
                              onMouseDown={() => isResizedTop.current = true}></div>
                     </div>
                     <div className="bottom-panel p-2 pl-0 pt-0 overflow-hidden">
-                        <ProblemTests/>
+                        <ProblemTests result={result} problemData={problemData}/>
                     </div>
                 </div>
             </div>
