@@ -106,7 +106,7 @@ export const Navbar = () => {
                                             <Menu.Items
                                                 className="absolute right-0 z-10 mt-6 w-48 origin-top-right rounded-md bg-zinc-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                                 <Menu.Item>
-                                                    <Link to={`/profile/${user.username}`}
+                                                    <div to={`/profile/${user.username}`}
                                                           className="flex justify-start p-2">
                                                         {user.photo ? (
                                                             <img
@@ -122,7 +122,7 @@ export const Navbar = () => {
                                                             />
                                                         )}
                                                         <p className="ml-3 text-white text-lg">{user.username}</p>
-                                                    </Link>
+                                                    </div>
                                                 </Menu.Item>
                                                 <Menu.Item>
                                                     {({active}) => (

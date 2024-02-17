@@ -15,13 +15,23 @@ export const profileUpdate = (editedUser) => async dispatch => {
     const formData = new FormData()
     formData.append('username', editedUser.username)
     formData.append('email', editedUser.email)
-    formData.append('first_name', editedUser.first_name)
-    formData.append('last_name', editedUser.last_name)
-    formData.append('gender', editedUser.gender)
-    formData.append('summary', editedUser.summary)
-    formData.append('birthday', editedUser.birthday)
+    if (editedUser.first_name) {
+        formData.append('first_name', editedUser.first_name);
+    }
+    if (editedUser.last_name) {
+        formData.append('last_name', editedUser.last_name);
+    }
+    if (editedUser.gender) {
+        formData.append('gender', editedUser.gender);
+    }
+    if (editedUser.birthday) {
+        formData.append('birthday', editedUser.birthday);
+    }
+    if (editedUser.summary) {
+        formData.append('summary', editedUser.summary);
+    }
 
-    if (isBase64(editedUser.photo)) {
+    if (editedUser.photo && isBase64(editedUser.photo)) {
         const blob = await fetch(editedUser.photo).then((res) => res.blob())
         formData.append('photo', blob, `${editedUser.username}_photo.jpg`)
     }

@@ -5,9 +5,14 @@ from .views import (
     ProblemListAPIView,
     ProgrammingLanguageListAPIView,
     CommentListCreateAPIView,
+    CommentDestroyAPIView,
     ProblemRetrieveAPIView,
     get_random_problem,
-    set_user_problem_status,
+    get_user_problem_status,
+    toggle_like_problem,
+    toggle_dislike_problem,
+    toggle_like_comment,
+    toggle_dislike_comment
 )
 from .viewsets import (
     UserSavedProblemsViewSet,
@@ -16,12 +21,19 @@ from .viewsets import (
 )
 
 urlpatterns = [
-    path('problem/<int:pk>/', ProblemRetrieveAPIView.as_view(), name='problem-single'),
     path('problems/', ProblemListAPIView.as_view(), name='problems-list'),
+    path('problems/<str:problem_id>/', ProblemRetrieveAPIView.as_view(), name='problem-single'),
+    path('problems/<int:pk>/status/', get_user_problem_status, name='problem-status'),
+    path('problems/<int:pk>/like/', toggle_like_problem, name='like-problem'),
+    path('problems/<int:pk>/dislike/', toggle_dislike_problem, name='dislike-problem'),
     path('problem-random/', get_random_problem, name='random-problem'),
-    path('set-problem-status/<int:pk>/', set_user_problem_status, name='set-problem-status'),
+
     path('languages/', ProgrammingLanguageListAPIView.as_view(), name='languages-list'),
+
     path('comments/', CommentListCreateAPIView.as_view(), name='comments'),
+    path('comments/<int:pk>/', CommentDestroyAPIView.as_view(), name='comment-delete'),
+    path('comments/<int:pk>/like/', toggle_like_comment, name='comment-like'),
+    path('comments/<int:pk>/dislike/', toggle_dislike_comment, name='comment-dislike'),
 ]
 
 router = DefaultRouter()

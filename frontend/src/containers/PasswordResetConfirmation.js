@@ -4,6 +4,7 @@ import {useState, useEffect} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {resetPasswordConfirm} from "../actions/auth";
+import {toast} from "react-toastify";
 
 export const PasswordResetConfirmation = () => {
     const navigate = useNavigate()
@@ -11,22 +12,38 @@ export const PasswordResetConfirmation = () => {
 
     const {uid, token} = useParams()
 
-    const [requestSent, setRequestSent] = useState(false)
+    const [errors, setErrors] = useState([])
     const [formData, setFormData] = useState({
         newPassword: '',
         reNewPassword: ''
     })
     const {newPassword, reNewPassword} = formData
 
-    const {isAuthenticated} = useSelector(state => state.auth)
+    const {isAuthenticated, passwordResetConfirmed, passwordResetConfirmedErrors} = useSelector(state => state.auth)
+
     useEffect(() => {
         if (isAuthenticated) {
             navigate('/')
         }
-        if (requestSent) {
+        if (passwordResetConfirmed) {
+            toast.success("Password was successfully reset", {
+                position: "top-center",
+                className: 'app-notification',
+                autoClose: 1500,
+                hideProgressBar: true,
+                pauseOnHover: true,
+                theme: "dark",
+            })
+            setErrors([])
             navigate('/login')
         }
-    }, [isAuthenticated, requestSent])
+    }, [isAuthenticated, passwordResetConfirmed])
+
+    useEffect(() => {
+        if (passwordResetConfirmedErrors) {
+            setErrors([...passwordResetConfirmedErrors])
+        }
+    }, [passwordResetConfirmedErrors])
 
     const handleChange = (e) => {
         setFormData({
@@ -37,12 +54,16 @@ export const PasswordResetConfirmation = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
+        if (newPassword !== reNewPassword) {
+            setErrors(errors => {
+                return ['Passwords don\'t match.', ...errors]
+            })
+        }
         dispatch(resetPasswordConfirm(uid, token, newPassword, reNewPassword))
-        setRequestSent(true)
     }
 
     return (
-        <div className="flex h-screen items-center justify-center bg-gray-100">
+        <div className="flex min-h-screen items-center justify-center bg-gray-100 py-36">
             <div className="bg-white p-8 rounded shadow-md w-full sm:w-96">
                 <img
                     className="mx-auto h-12 w-auto mb-8"
@@ -50,6 +71,14 @@ export const PasswordResetConfirmation = () => {
                     alt="Your Company"
                 />
                 <h2 className="text-center font-bold text-gray-800 mb-6">Reset Password Confirm</h2>
+                <div className="my-4">
+                    {errors.map(error => (
+                        <div className="mb-2 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+                             role="alert">
+                            <span className="block sm:inline">{error}</span>
+                        </div>
+                    ))}
+                </div>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <div className="flex items-center justify-between">
@@ -68,7 +97,7 @@ export const PasswordResetConfirmation = () => {
                             value={newPassword}
                         />
                     </div>
-                     <div>
+                    <div>
                         <div className="flex items-center justify-between">
                             <label htmlFor="reNewPassword" className="block text-sm font-medium text-gray-600">
                                 Repeat Password

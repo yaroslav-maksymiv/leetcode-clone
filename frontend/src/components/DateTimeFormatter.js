@@ -1,7 +1,7 @@
 import Popup from "reactjs-popup";
 
 
-const DateTimeFormatter = ({dateTime}) => {
+const DateTimeFormatter = ({dateTime, position}) => {
     const date = new Date(dateTime)
     const formattedDate = date.toLocaleDateString('en-US', {
         day: 'numeric',
@@ -19,7 +19,7 @@ const DateTimeFormatter = ({dateTime}) => {
             trigger={open => (
                 <div>{formattedDate}</div>
             )}
-            position="top center"
+            position={position ? position : "top center"}
             on={['hover']}
             className="date-popup"
         >

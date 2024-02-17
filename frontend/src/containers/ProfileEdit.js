@@ -1,19 +1,26 @@
 import React, {useEffect, useState} from 'react'
 
 import {useSelector, useDispatch} from "react-redux";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {profileUpdate} from "../actions/profile";
 import BirthdaySelects from "../components/ProfileEdit/BirthdaySelects";
 import {dateOptions} from "../misc";
 import PhotoEditPopup from "../components/ProfileEdit/PhotoEditPopup";
 
 export const ProfileEdit = () => {
+    const navigate = useNavigate()
     const dispatch = useDispatch()
-    const {user} = useSelector(state => state.auth)
+    const {user, isAuthenticated} = useSelector(state => state.auth)
 
     const [activeSet, setActiveSet] = useState('')
     const [editedUser, setEditedUser] = useState({...user})
     const [birthday, setBirthday] = useState('')
+
+    useEffect(() => {
+        if (!isAuthenticated) {
+            navigate('/login?redirect_url=edit-profile')
+        }
+    }, [isAuthenticated])
 
     useEffect(() => {
         setEditedUser({...user})

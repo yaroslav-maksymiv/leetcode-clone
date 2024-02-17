@@ -4,24 +4,42 @@ import {useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import {Link} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {resetPassword} from "../actions/auth";
+import {passwordResetNull, resetPassword} from "../actions/auth";
+import {toast} from "react-toastify";
 
 export const PasswordReset = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
-    const [requestSent, setRequestSent] = useState(false)
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false)
+    const [errors, setErrors] = useState([])
     const [formData, setFormData] = useState({
         email: ''
     })
     const {email} = formData
-    const {isAuthenticated} = useSelector(state => state.auth)
+    const {isAuthenticated, passwordReset} = useSelector(state => state.auth)
 
     useEffect(() => {
-        if (isAuthenticated || requestSent) {
+        if (isAuthenticated) {
             navigate('/')
         }
-    }, [isAuthenticated, requestSent])
+    }, [isAuthenticated])
+
+    useEffect(() => {
+        if (passwordReset) {
+            toast.success("Reset password link was sent to your email", {
+                position: "top-center",
+                className: 'app-notification',
+                autoClose: 5000,
+                hideProgressBar: true,
+                pauseOnHover: true,
+                theme: "dark",
+            })
+            dispatch(passwordResetNull())
+        } else if (passwordReset === false) {
+            setErrors(['The e-mail address is not assigned to any user account.'])
+        }
+    }, [passwordReset])
 
     const handleChange = (e) => {
         setFormData({
@@ -32,12 +50,15 @@ export const PasswordReset = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
+        setErrors([])
         dispatch(resetPassword(email))
-        setRequestSent(true)
+
+        setIsButtonDisabled(true)
+        setTimeout(() => setIsButtonDisabled(false), 5000)
     }
 
     return (
-        <div className="flex h-screen items-center justify-center bg-gray-100">
+        <div className="flex min-h-screen items-center justify-center bg-gray-100 py-36">
             <div className="bg-white p-8 rounded shadow-md w-full sm:w-96">
                 <img
                     className="mx-auto h-12 w-auto mb-8"
@@ -45,6 +66,14 @@ export const PasswordReset = () => {
                     alt="Your Company"
                 />
                 <h2 className="text-center font-bold text-gray-800 mb-6">Reset Password</h2>
+                <div className="my-4">
+                    {errors.map(error => (
+                        <div className="mb-2 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+                             role="alert">
+                            <span className="block sm:inline">{error}</span>
+                        </div>
+                    ))}
+                </div>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <label htmlFor="email" className="block text-sm font-medium text-gray-600">
@@ -62,6 +91,7 @@ export const PasswordReset = () => {
                         />
                     </div>
                     <button
+                        disabled={isButtonDisabled}
                         type="submit"
                         className="w-full bg-black text-white rounded-md py-2 px-4 text-sm font-semibold focus:outline-none focus:ring focus:border-indigo-500"
                     >

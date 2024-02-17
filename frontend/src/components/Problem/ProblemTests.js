@@ -1,7 +1,7 @@
 import TestCase from "./TestCase";
 import {useEffect, useState} from "react";
 
-const ProblemTests = ({problemData, result}) => {
+const ProblemTests = ({problemData, result, codeError}) => {
     const testCases = problemData.testCases
 
     const [activeTab, setActiveTab] = useState('testCases')
@@ -64,6 +64,9 @@ const ProblemTests = ({problemData, result}) => {
                         ) : (
                             <h6 className="text-2xl text-red-500">Failed</h6>
                         )}
+                        {codeError && (
+                            <div className="p-5 w-full bg-zinc-900 rounded-md text-gray-400 text-lg">Error: <span className="text-red-500">{codeError}</span></div>
+                        )}
                         {
                             testCases.map((testCase, index) => {
                                 const inputItems = []
@@ -85,11 +88,7 @@ const ProblemTests = ({problemData, result}) => {
                         <div className="text-gray-500">You must run your code first</div>
                     </div>
                 )}
-
-                {/*<TestCase id={1} input={['a = [1, 2, 3]', 'target = 123']} output={'[0,1]'} expected={'[0,1]'} status={'accepted'}/>*/}
-                {/*<TestCase id={1} input={['a = [1, 2, 3]', 'target = 123']} output={'[0,2]'} expected={'[0,3]'} status={'failed'}/>*/}
             </div>
-
             {/*<div*/}
             {/*    className="layout-block__bottom bg-zinc-800 w-full min-h-10 h-10 rounded-b-md flex items-center pl-3 pr-3 gap-1">*/}
             {/*    Bottom*/}

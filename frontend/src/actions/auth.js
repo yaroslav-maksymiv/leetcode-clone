@@ -11,7 +11,7 @@ import {
     PASSWORD_RESET_FAIL,
     PASSWORD_RESET_SUCCESS,
     PASSWORD_RESET_CONFIRM_FAIL,
-    PASSWORD_RESET_CONFIRM_SUCCESS
+    PASSWORD_RESET_CONFIRM_SUCCESS, PASSWORD_RESET_NULL
 } from "../constants/authConstants";
 
 import axios from 'axios'
@@ -114,8 +114,7 @@ export const register = (username, password, rePassword, email) => async dispatc
 
         dispatch({type: REGISTER_SUCCESS, payload: response})
     } catch (e) {
-        console.log(e)
-        dispatch({type: REGISTER_FAIL})
+        dispatch({type: REGISTER_FAIL, payload: e.response.data})
     }
 }
 
@@ -129,7 +128,7 @@ export const resetPassword = (email) => async dispatch => {
     const body = JSON.stringify({email})
 
     try {
-        await axios.post(`${process.env.REACT_APP_API_URL}/auth/users/reset_password/`, body, config)
+        const response = await axios.post(`${process.env.REACT_APP_API_URL}/auth/users/reset_password/`, body, config)
         dispatch({type: PASSWORD_RESET_SUCCESS})
     } catch (e) {
         dispatch({type: PASSWORD_RESET_FAIL})
@@ -151,10 +150,14 @@ export const resetPasswordConfirm = (uid, token, newPassword, reNewPassword) => 
         await axios.post(`${process.env.REACT_APP_API_URL}/auth/users/reset_password_confirm/`, body, config)
         dispatch({type: PASSWORD_RESET_CONFIRM_SUCCESS})
     } catch (e) {
-        dispatch({type: PASSWORD_RESET_CONFIRM_FAIL})
+        dispatch({type: PASSWORD_RESET_CONFIRM_FAIL, payload: e.response.data})
     }
 }
 
 export const logout = () => dispatch => {
     dispatch({type: LOGOUT})
+}
+
+export const passwordResetNull = () => dispatch => {
+    dispatch({type: PASSWORD_RESET_NULL})
 }

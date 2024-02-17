@@ -9,6 +9,7 @@ export const Register = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
+    const [errors, setErrors] = useState([])
     const [formData, setFormData] = useState({
         username: '',
         password: '',
@@ -16,7 +17,7 @@ export const Register = () => {
         email: ''
     })
     const {username, password, rePassword, email} = formData
-    const {registered, isAuthenticated} = useSelector(state => state.auth)
+    const {registered, isAuthenticated, errors: registrationErrors} = useSelector(state => state.auth)
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -26,6 +27,12 @@ export const Register = () => {
             navigate('/login')
         }
     }, [registered, isAuthenticated])
+
+    useEffect(() => {
+        if (registrationErrors) {
+            setErrors([...registrationErrors])
+        }
+    }, [registrationErrors])
 
     const handleChange = (e) => {
         setFormData({
@@ -38,11 +45,15 @@ export const Register = () => {
         e.preventDefault()
         if (password === rePassword) {
             dispatch(register(username, password, rePassword, email))
+        } else {
+            setErrors(errors => {
+                return ['Passwords don\'t match.', ...errors]
+            })
         }
     }
 
     return (
-        <div className="flex h-screen items-center justify-center bg-gray-100">
+        <div className="flex min-h-screen items-center justify-center bg-gray-100 py-36">
             <div className="bg-white p-8 rounded shadow-md w-full sm:w-96">
                 <img
                     className="mx-auto h-12 w-auto mb-8"
@@ -50,6 +61,14 @@ export const Register = () => {
                     alt="Your Company"
                 />
                 <h2 className="text-center font-bold text-gray-800 mb-6">Sign up</h2>
+                <div className="my-4">
+                    {errors.map(error => (
+                        <div className="mb-2 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+                             role="alert">
+                            <span className="block sm:inline">{error}</span>
+                        </div>
+                    ))}
+                </div>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <label htmlFor="username" className="block text-sm font-medium text-gray-600">

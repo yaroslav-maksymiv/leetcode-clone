@@ -6,11 +6,11 @@ from rest_framework.response import Response
 
 from .models import (
     Submission, UserCode, UserSavedProblems,
-    Problem, ProgrammingLanguage
+    Problem, ProgrammingLanguage, UserProblemStatus
 )
 from .serializers import (
     UserSavedProblemsSerializer,
-    UserCodeSerializer, SubmissionSerializer
+    UserCodeSerializer, SubmissionSerializer, UserProblemStatusSerializer
 )
 
 
@@ -20,7 +20,7 @@ class SubmissionViewSet(viewsets.ModelViewSet):
 
     def list(self, request):
         user = request.user
-        problem_id = request.data.get('problem')
+        problem_id = request.query_params.get('problem')
         problem = get_object_or_404(Problem, id=problem_id)
         submissions = Submission.objects.filter(user=user, problem=problem)
         serializer = self.get_serializer(submissions, many=True)
@@ -45,8 +45,39 @@ class SubmissionViewSet(viewsets.ModelViewSet):
             runtime_ms=runtime,
             memory_kb=memory,
         )
-
         submission.save()
+
+        total_count_submissions = Submission.objects.filter(user=request.user, problem=problem).count()
+        not_accepted_submissions_count = Submission.objects.filter(user=request.user, problem=problem,
+                                                                   is_accepted=False).count()
+        accepted_submission_exists = Submission.objects.filter(user=request.user, problem=problem,
+                                                               is_accepted=True).exists()
+
+        if accepted_submission_exists:
+            problem_status = 'solved'
+        elif not_accepted_submissions_count == total_count_submissions:
+            problem_status = 'attempted'
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        user_problem_status, created = UserProblemStatus.objects.get_or_create(
+            user=request.user,
+            problem=problem,
+            defaults={'status': problem_status}
+        )
+
+        status_data = {
+            'user': request.user.id,
+            'problem': problem.id,
+            'status': problem_status
+        }
+
+        serializer = UserProblemStatusSerializer(user_problem_status, data=status_data)
+
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
         return Response(SubmissionSerializer(submission).data, status=status.HTTP_201_CREATED)
 
@@ -89,7 +120,7 @@ class UserCodeViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, pk):
         user = request.user
         problem = get_object_or_404(Problem, id=pk)
-        language_id = request.data.get('language')
+        language_id = request.query_params.get('language')
         language = get_object_or_404(ProgrammingLanguage, id=language_id)
         code = get_object_or_404(UserCode, user=user, problem=problem, language=language)
         serializer = self.get_serializer(code)

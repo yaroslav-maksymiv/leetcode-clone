@@ -39,6 +39,9 @@ class Problem(TimestampModel):
     likes = models.ManyToManyField(User, related_name='problem_like')
     dislikes = models.ManyToManyField(User, related_name='problem_dislike')
 
+    def number_of_comments(self):
+        return self.comments.filter(parent=None).count()
+
     def number_of_likes(self):
         return self.likes.count()
 
@@ -51,6 +54,14 @@ class Problem(TimestampModel):
             return 0.0
         accepted_submissions = self.submissions.filter(is_accepted=True).count()
         return (accepted_submissions / total_submissions) * 100
+
+    def get_difficulty_display(self, value):
+        display_value = None
+        for choice in self.DIFFICULTY_CHOICES:
+            if choice[0] == value:
+                display_value = choice[1]
+                break
+        return display_value
 
     def __str__(self):
         return self.title
@@ -79,7 +90,7 @@ class UserProblemStatus(TimestampModel):
     )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    problem = models.ForeignKey(Problem, on_delete=models.CASCADE)
+    problem = models.ForeignKey(Problem, on_delete=models.CASCADE, related_name='statuses')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES)
 
     class Meta:
@@ -106,7 +117,7 @@ class UserCode(TimestampModel):
 
 class Comment(TimestampModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    problem = models.ForeignKey(Problem, on_delete=models.CASCADE)
+    problem = models.ForeignKey(Problem, on_delete=models.CASCADE, related_name='comments')
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
     content = models.TextField()
     likes = models.ManyToManyField(User, blank=True, related_name='comment_likes')

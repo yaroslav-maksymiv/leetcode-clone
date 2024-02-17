@@ -1,4 +1,4 @@
-from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveAPIView, DestroyAPIView
 from rest_framework import filters
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -19,6 +19,128 @@ from .pagination import CustomPagination
 import random
 
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def toggle_like_comment(request, pk):
+    try:
+        comment = Comment.objects.get(id=pk)
+    except Comment.DoesNotExist:
+        return Response({'error': 'Comment does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+
+    user = request.user
+    response_data = {}
+
+    if user in comment.likes.all():
+        comment.likes.remove(user)
+        response_data['message'] = 'Like removed'
+    else:
+        comment.likes.add(user)
+        if user in comment.dislikes.all():
+            comment.dislikes.remove(user)
+        response_data['message'] = 'Comment liked'
+
+    return Response(response_data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def toggle_dislike_comment(request, pk):
+    try:
+        comment = Comment.objects.get(id=pk)
+    except Comment.DoesNotExist:
+        return Response({'error': 'Comment does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+
+    user = request.user
+    response_data = {}
+
+    if user in comment.dislikes.all():
+        comment.dislikes.remove(user)
+        response_data['message'] = 'Dislike removed'
+    else:
+        comment.dislikes.add(user)
+        if user in comment.likes.all():
+            comment.likes.remove(user)
+        response_data['message'] = 'Comment disliked'
+
+    return Response(response_data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_problem_status(request, pk):
+    problem = get_object_or_404(Problem, id=pk)
+    user_status = UserProblemStatus.objects.get(user=request.user, problem=problem)
+    return Response({'status': user_status.status})
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def toggle_like_problem(request, pk):
+    try:
+        problem = Problem.objects.get(pk=pk)
+    except Problem.DoesNotExist:
+        return Response({'error': 'Problem not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    user = request.user
+    response_data = {}
+
+    if user in problem.likes.all():
+        problem.likes.remove(user)
+        response_data['message'] = 'Like removed'
+    else:
+        problem.likes.add(user)
+        if user in problem.dislikes.all():
+            problem.dislikes.remove(user)
+        response_data['message'] = 'Problem liked'
+
+    response_data['likes'] = problem.likes.count()
+    response_data['dislikes'] = problem.dislikes.count()
+
+    return Response(response_data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def toggle_dislike_problem(request, pk):
+    try:
+        problem = Problem.objects.get(pk=pk)
+    except Problem.DoesNotExist:
+        return Response({'error': 'Problem not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    user = request.user
+    response_data = {}
+
+    if user in problem.dislikes.all():
+        problem.dislikes.remove(user)
+        response_data['message'] = 'Dislike removed'
+    else:
+        problem.dislikes.add(user)
+        if user in problem.likes.all():
+            problem.likes.remove(user)
+        response_data['message'] = 'Problem disliked'
+
+    response_data['likes'] = problem.likes.count()
+    response_data['dislikes'] = problem.dislikes.count()
+
+    return Response(response_data, status=status.HTTP_200_OK)
+
+
+class CommentDestroyAPIView(DestroyAPIView):
+    queryset = Comment.objects.all()
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'pk'
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        if request.user != instance.user:
+            return Response({'message': 'You have no permission to delete this comment.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        instance.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class CommentListCreateAPIView(ListCreateAPIView):
     queryset = Comment.objects.order_by('created_at')
     serializer_class = CommentSerializer
@@ -29,17 +151,18 @@ class CommentListCreateAPIView(ListCreateAPIView):
         queryset = self.get_queryset()
         problem_id = request.query_params.get('problem')
         parent_id = request.query_params.get('parent')
-
-        problem = get_object_or_404(Problem, id=problem_id)
-        if problem:
-            queryset = queryset.filter(problem=problem)
+        order_by = request.query_params.get('order_by')
 
         if parent_id:
             parent = get_object_or_404(Comment, id=parent_id)
             queryset = queryset.filter(parent=parent)
         else:
             queryset = queryset.filter(parent=None)
+            problem = get_object_or_404(Problem, id=problem_id)
+            if problem:
+                queryset = queryset.filter(problem=problem)
 
+        queryset = queryset.order_by(order_by)
         queryset = self.filter_queryset(queryset)
         page = self.paginate_queryset(queryset)
 
@@ -71,7 +194,7 @@ class CommentListCreateAPIView(ListCreateAPIView):
             parent=parent,
             content=content
         )
-        serializer = CommentSerializer(comment).data
+        serializer = CommentSerializer(comment, context={'request': self.request}).data
 
         return Response(serializer)
 
@@ -121,17 +244,21 @@ def get_random_problem(request):
     if difficulty:
         queryset = queryset.filter(difficulty=difficulty)
 
-    problems_count = queryset.count()
-    random_index = random.randint(1, problems_count)
-    problem = Problem.objects.get(id=random_index)
-
-    return Response(ProblemSerializer(problem, context={'request': request}).data)
+    if queryset.exists():
+        random_problem = random.choice(queryset)
+        serializer = ProblemSerializer(random_problem, context={'request': request})
+        return Response(serializer.data)
+    return Response({'error': 'No matching objects found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 class ProblemRetrieveAPIView(RetrieveAPIView):
     queryset = Problem.objects.all()
     serializer_class = ProblemSerializer
-    lookup_field = 'pk'
+    lookup_field = 'problem_id'
+
+    def get_object(self):
+        obj = self.queryset.get(problem_id=self.kwargs[self.lookup_field])
+        return obj
 
 
 class ProblemListAPIView(ListAPIView):
@@ -144,6 +271,12 @@ class ProblemListAPIView(ListAPIView):
 
     def get_queryset(self):
         queryset = Problem.objects.all()
+
+        user = self.request.user
+        if user.is_authenticated:
+            user_status = self.request.query_params.get('status')
+            if user_status:
+                queryset = queryset.filter(statuses__user=user, statuses__status=user_status)
 
         category = self.request.query_params.get('category')
         if category:
