@@ -10,7 +10,7 @@ urlpatterns = [
     path('auth/', include('djoser.urls.jwt')),
     path('api/', include('problems.urls')),
 
-    re_path(r'^(?!.*media).*', TemplateView.as_view(template_name='index.html'))
+    re_path(r'^(?!.*media)(?!.*admin).*', TemplateView.as_view(template_name='index.html'))
 ]
 
 if settings.DEBUG:

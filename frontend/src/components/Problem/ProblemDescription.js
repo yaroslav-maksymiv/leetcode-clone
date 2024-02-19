@@ -196,6 +196,9 @@ const ProblemDescription = ({activeTab, setActiveTab, isAuthenticated, problem, 
                         {problemData.examples.map(example => (
                             <div key={example.id}>
                                 <h6 className="text-white mb-2">Example:</h6>
+                                {example.img && (
+                                    <img className="mb-4" src={example.img} alt="example"/>
+                                )}
                                 <div className="pl-4 border-l-2 border-gray-500 flex flex-col gap-2">
                                     <div className="flex gap-2">
                                         <p className="text-white text-bold">Input: </p>

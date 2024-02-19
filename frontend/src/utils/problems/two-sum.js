@@ -1,3 +1,5 @@
+import {equalsCheck} from "./index";
+
 const startCode = `function twoSum(nums, target) {
   // const hashTable = {}
   // for (let i=0; i<nums.length; i++) {
@@ -24,10 +26,6 @@ const testCases = [
         expectedOutput: [0, 1]
     },
 ]
-
-const equalsCheck = (a, b) => {
-    return JSON.stringify(a) === JSON.stringify(b);
-}
 
 const handleTwoSum = (fn) => {
     const results = []
